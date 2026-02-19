@@ -4,10 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
+
 import se.his.it401g.todo.HomeTask;
 import se.his.it401g.todo.Task;
 import se.his.it401g.todo.TaskInputListener;
@@ -16,10 +13,11 @@ import se.his.it401g.todo.TaskListener;
 
 public class ToDo implements TaskListener {
 	
-	private Component panel1;
-	private MenuComponent task;
+	private JPanel panel1;
+//	private MenuComponent task;
+//	private Container frame;
 
-	public static void main(String[] args) {
+	public ToDo() {
 		JFrame frame = new JFrame();
 		//JLabel label = new JLabel();
 		
@@ -134,20 +132,21 @@ public class ToDo implements TaskListener {
 		frame.setSize(750, 550);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLayout(null);
+		frame.setLayout(new BorderLayout());
 	
-	JPanel panel1 = new JPanel(new BorderLayout());
+	panel1 = new JPanel(new BorderLayout());
 	panel1.setBackground(Color.green);
-	panel1.setBounds(0, 80, 737, 433);
+//	panel1.setBounds(0, 80, 737, 433);
 	panel1.setLayout(new BoxLayout(panel1,1));
 		
 	JPanel panel2 = new JPanel(new BorderLayout());
 	panel2.setBackground(Color.red);
 	panel2.setBounds(0, 0, 737, 80);
 	panel2.setLayout(new BoxLayout(panel2, 0));
-
-	frame.add(panel1);
-	frame.add(panel2);
+	
+	JScrollPane scroll = new JScrollPane(panel1);
+	frame.add(scroll, BorderLayout.CENTER);
+	frame.add(panel2, BorderLayout.NORTH);
 	
 	JButton AddHomeTaskButton = new JButton("New Hometask");
 	JButton AddStudyTaskButton = new JButton("New Studytask");
@@ -157,18 +156,32 @@ public class ToDo implements TaskListener {
 	panel2.add(AddStudyTaskButton);
 	panel2.add(AddCustomTaskButton);
 	
+	frame.add(scroll);
+	scroll.setViewportView(panel1);
+	scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	
+
 	
 		AddHomeTaskButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				//taskCreated(Task.HomeTask());
 				Task task = new HomeTask();
-				task.getTaskListener();
+				task.setTaskListener(ToDo.this);
 				panel1.add(task.getGuiComponent());
 				frame.revalidate();
-				frame.repaint();
-				panel1.revalidate();
-				panel1.repaint();
+			}
+		});
+		
+		
+
+		
+		AddStudyTaskButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				Task task = new StudyTask();
+				task.setTaskListener(ToDo.this);
+				panel1.add(task.getGuiComponent());
+				frame.revalidate();
 			}
 		});
 	
@@ -180,11 +193,6 @@ public class ToDo implements TaskListener {
 	
 	
 	
-	
-	
-	
-	
-
 
 	@Override
 	public void taskChanged(Task t) {
@@ -207,14 +215,15 @@ public class ToDo implements TaskListener {
 	@Override
 	public void taskCreated(Task t) {
 		// TODO Auto-generated method stub
-		Task task = new HomeTask();
 		
 	}
 
 	@Override
 	public void taskRemoved(Task t) {
-		// TODO Auto-generated method stub
-		//panel1.remove(t.getGuiComponent());
+		panel1.remove(t.getGuiComponent());
+		panel1.revalidate();
+	    panel1.repaint();
+
 		
 	}
 	
