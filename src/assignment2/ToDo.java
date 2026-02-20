@@ -10,12 +10,16 @@ import se.his.it401g.todo.Task;
 import se.his.it401g.todo.TaskInputListener;
 import se.his.it401g.todo.StudyTask;
 import se.his.it401g.todo.TaskListener;
+import java.util.LinkedList;
 
 public class ToDo implements TaskListener {
 	
 	private JPanel panel1;
+	private LinkedList<Task> listOfTasks;
+	private LinkedList<Task> listOfCompletedTasks;
 //	private MenuComponent task;
 //	private Container frame;
+	private Task task;
 
 	public ToDo() {
 		JFrame frame = new JFrame();
@@ -148,15 +152,17 @@ public class ToDo implements TaskListener {
 	frame.add(scroll, BorderLayout.CENTER);
 	frame.add(panel2, BorderLayout.NORTH);
 	
-	JButton AddHomeTaskButton = new JButton("New Hometask");
-	JButton AddStudyTaskButton = new JButton("New Studytask");
-	JButton AddCustomTaskButton = new JButton("New custom task");
+	JButton AddHomeTaskButton = new JButton("New Home task");
+	JButton AddStudyTaskButton = new JButton("New Study task");
+	JButton AddCustomTaskButton = new JButton("New Detailed task");
+	
+	listOfTasks = new LinkedList<Task>();
+	listOfCompletedTasks = new LinkedList<Task>();
 	
 	panel2.add(AddHomeTaskButton);
 	panel2.add(AddStudyTaskButton);
 	panel2.add(AddCustomTaskButton);
 	
-	frame.add(scroll);
 	scroll.setViewportView(panel1);
 	scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 	
@@ -166,19 +172,24 @@ public class ToDo implements TaskListener {
 
 			public void actionPerformed(ActionEvent e) {
 				Task task = new HomeTask();
+				listOfTasks.addLast(task);
+				listOfCompletedTasks.addLast(task);
+				System.out.println("total tasks: " + listOfTasks.indexOf(task));
+				System.out.println("uncompleted tasks: " + listOfCompletedTasks.indexOf(task));
 				task.setTaskListener(ToDo.this);
 				panel1.add(task.getGuiComponent());
 				frame.revalidate();
 			}
 		});
 		
-		
-
 		
 		AddStudyTaskButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				Task task = new StudyTask();
+				listOfTasks.addLast(task);
+//				listOfCompletedTasks.addLast(task);
+				System.out.println(listOfTasks.indexOf(task));
 				task.setTaskListener(ToDo.this);
 				panel1.add(task.getGuiComponent());
 				frame.revalidate();
@@ -186,9 +197,33 @@ public class ToDo implements TaskListener {
 		});
 	
 	
+		AddCustomTaskButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				Task task = new CustomTask();
+				listOfTasks.addLast(task);
+//				listOfCompletedTasks.addLast(task);
+				System.out.println(listOfTasks.indexOf(task));
+				task.setTaskListener(ToDo.this);
+				panel1.add(task.getGuiComponent());
+				frame.revalidate();
+				
+			}
+		});
 	
+		
+
+
+		JButton SortAlphabetButton = new JButton("A-Ö");
+		panel2.add(SortAlphabetButton);
+		SortAlphabetButton.addActionListener(new ActionListener() {
+		            public void actionPerformed(ActionEvent e) {
+		                //listOfTasks.get;
+		                frame.revalidate();
+		            }
+		        });
+		
 	}
-	
 	
 	
 	
@@ -203,12 +238,14 @@ public class ToDo implements TaskListener {
 	@Override
 	public void taskCompleted(Task t) {
 		// TODO Auto-generated method stub
+		listOfCompletedTasks.removeLast();	
 		
 	}
 
 	@Override
 	public void taskUncompleted(Task t) {
 		// TODO Auto-generated method stub
+		listOfCompletedTasks.addLast(task);	
 		
 	}
 
@@ -223,8 +260,8 @@ public class ToDo implements TaskListener {
 		panel1.remove(t.getGuiComponent());
 		panel1.revalidate();
 	    panel1.repaint();
-
-		
+	    listOfTasks.removeLast();	
+	    listOfCompletedTasks.removeLast();
 	}
 	
 	}
