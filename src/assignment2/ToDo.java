@@ -17,6 +17,10 @@ public class ToDo implements TaskListener {
 	private JPanel panel1;
 	private LinkedList<Task> listOfTasks;
 	private LinkedList<Task> listOfCompletedTasks;
+	private JLabel status;
+	private int totalTasksInt;
+	private int completedTasksInt;
+	private String statusText;
 //	private MenuComponent task;
 //	private Container frame;
 	private Task task;
@@ -156,12 +160,17 @@ public class ToDo implements TaskListener {
 	JButton AddStudyTaskButton = new JButton("New Study task");
 	JButton AddCustomTaskButton = new JButton("New Detailed task");
 	
+	status = new JLabel(completedTasksInt + " out of " + totalTasksInt + " completed"); //+ listOfCompletedTasks.indexOf(task));
+	statusText = new String(completedTasksInt + " out of " + totalTasksInt + " completed");
+	
 	listOfTasks = new LinkedList<Task>();
 	listOfCompletedTasks = new LinkedList<Task>();
+	totalTasksInt = listOfTasks.indexOf(task)+1;
 	
 	panel2.add(AddHomeTaskButton);
 	panel2.add(AddStudyTaskButton);
 	panel2.add(AddCustomTaskButton);
+	panel2.add(status);
 	
 	scroll.setViewportView(panel1);
 	scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -174,6 +183,8 @@ public class ToDo implements TaskListener {
 				Task task = new HomeTask();
 				listOfTasks.addLast(task);
 				listOfCompletedTasks.addLast(task);
+				totalTasksInt++;
+				status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
 				System.out.println("total tasks: " + listOfTasks.indexOf(task));
 				System.out.println("uncompleted tasks: " + listOfCompletedTasks.indexOf(task));
 				task.setTaskListener(ToDo.this);
@@ -238,15 +249,22 @@ public class ToDo implements TaskListener {
 	@Override
 	public void taskCompleted(Task t) {
 		// TODO Auto-generated method stub
-		listOfCompletedTasks.removeLast();	
+		listOfCompletedTasks.remove(this.task);
+		completedTasksInt++;
+		 status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
+		panel1.revalidate();
+	    panel1.repaint();
 		
 	}
 
 	@Override
 	public void taskUncompleted(Task t) {
 		// TODO Auto-generated method stub
-		listOfCompletedTasks.addLast(task);	
-		
+		listOfCompletedTasks.add(this.task);
+		completedTasksInt--;
+		status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
+		panel1.revalidate();
+	    panel1.repaint();
 	}
 
 	@Override
@@ -258,10 +276,15 @@ public class ToDo implements TaskListener {
 	@Override
 	public void taskRemoved(Task t) {
 		panel1.remove(t.getGuiComponent());
-		panel1.revalidate();
+		listOfCompletedTasks.remove(this.task);
+	    listOfTasks.remove(this.task);
+	    totalTasksInt--;
+	    if (t.isComplete()==true) {
+	    	completedTasksInt--;
+	    }
+	    status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
+	    panel1.revalidate();
 	    panel1.repaint();
-	    listOfTasks.removeLast();	
-	    listOfCompletedTasks.removeLast();
 	}
 	
 	}
