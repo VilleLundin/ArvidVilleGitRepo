@@ -10,6 +10,9 @@ import se.his.it401g.todo.Task;
 import se.his.it401g.todo.TaskInputListener;
 import se.his.it401g.todo.StudyTask;
 import se.his.it401g.todo.TaskListener;
+
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 public class ToDo implements TaskListener {
@@ -21,10 +24,27 @@ public class ToDo implements TaskListener {
 	private int totalTasksInt;
 	private int completedTasksInt;
 	private String statusText;
+	private int[] typeArray;
+	private int i;
 //	private MenuComponent task;
 //	private Container frame;
 	private Task task;
 
+	
+	
+	private void rebuildTaskPanel() {
+	    panel1.removeAll();
+
+	    for (Task t : listOfTasks) {
+	        panel1.add(t.getGuiComponent());
+	    }
+
+	    panel1.revalidate();
+	    panel1.repaint();
+	}
+	
+	
+	
 	public ToDo() {
 		JFrame frame = new JFrame();
 		//JLabel label = new JLabel();
@@ -167,6 +187,7 @@ public class ToDo implements TaskListener {
 	listOfCompletedTasks = new LinkedList<Task>();
 	totalTasksInt = listOfTasks.indexOf(task)+1;
 	
+	
 	panel2.add(AddHomeTaskButton);
 	panel2.add(AddStudyTaskButton);
 	panel2.add(AddCustomTaskButton);
@@ -183,10 +204,11 @@ public class ToDo implements TaskListener {
 				Task task = new HomeTask();
 				listOfTasks.addLast(task);
 				listOfCompletedTasks.addLast(task);
+//				typeArray[i++]=1;
 				totalTasksInt++;
 				status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
-				System.out.println("total tasks: " + listOfTasks.indexOf(task));
-				System.out.println("uncompleted tasks: " + listOfCompletedTasks.indexOf(task));
+//				System.out.println("total tasks: " + listOfTasks.indexOf(task));
+//				System.out.println("uncompleted tasks: " + listOfCompletedTasks.indexOf(task));
 				task.setTaskListener(ToDo.this);
 				panel1.add(task.getGuiComponent());
 				frame.revalidate();
@@ -199,7 +221,10 @@ public class ToDo implements TaskListener {
 			public void actionPerformed(ActionEvent e) {
 				Task task = new StudyTask();
 				listOfTasks.addLast(task);
-//				listOfCompletedTasks.addLast(task);
+				listOfCompletedTasks.addLast(task);
+//				typeArray[i++]=2;
+				totalTasksInt++;
+				status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
 				System.out.println(listOfTasks.indexOf(task));
 				task.setTaskListener(ToDo.this);
 				panel1.add(task.getGuiComponent());
@@ -213,7 +238,10 @@ public class ToDo implements TaskListener {
 			public void actionPerformed(ActionEvent e) {
 				Task task = new CustomTask();
 				listOfTasks.addLast(task);
-//				listOfCompletedTasks.addLast(task);
+				listOfCompletedTasks.addLast(task);
+//				typeArray[i++]=3;
+				totalTasksInt++;
+				status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
 				System.out.println(listOfTasks.indexOf(task));
 				task.setTaskListener(ToDo.this);
 				panel1.add(task.getGuiComponent());
@@ -229,10 +257,16 @@ public class ToDo implements TaskListener {
 		panel2.add(SortAlphabetButton);
 		SortAlphabetButton.addActionListener(new ActionListener() {
 		            public void actionPerformed(ActionEvent e) {
-		                //listOfTasks.get;
+		            	
+		            	Comparator<Task> comparator = new ComparatorTaskType();
+
+
+                        //Collections.sort(listOfTasks, comparator);
+                        listOfTasks.sort(comparator);
 		                frame.revalidate();
+		                rebuildTaskPanel();
 		            }
-		        });
+		});
 		
 	}
 	
