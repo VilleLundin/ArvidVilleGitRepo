@@ -58,7 +58,6 @@ public class CustomTask extends JPanel implements Task {
 		
 		JScrollPane scroll = new JScrollPane(center);
 		this.add(scroll, BorderLayout.CENTER);
-//		.add(, BorderLayout.NORTH);
 
 		scroll.setViewportView(center);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -88,14 +87,13 @@ public class CustomTask extends JPanel implements Task {
 	@Override
 	public String getTaskType() {
 		// TODO Auto-generated method stub
-		return "Custom";
+		return "Detailed";
 	}
 
 	@Override
 	public void setTaskListener(TaskListener t) {
 		// TODO Auto-generated method stub
 		listener = t;
-		
 	}
 
 	@Override
