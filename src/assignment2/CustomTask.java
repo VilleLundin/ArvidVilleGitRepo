@@ -46,7 +46,10 @@ public class CustomTask extends JPanel implements Task {
 	public CustomTask() {
 		super(new BorderLayout());
 		this.text = new JTextField("New task", 20);
+		
+		// text area is specific to this type of task, allows user to write long description
 		JTextArea textDescription = new JTextArea("Description", 5, 10);
+		
 		this.textLabel = new JLabel();
 		this.textLabel.setVisible(false);
 		JPanel center = new JPanel();
@@ -57,11 +60,9 @@ public class CustomTask extends JPanel implements Task {
 		add(center);
 		textDescription.setLineWrap(true);
 
+		// add scroll to textArea
 		JScrollPane scroll = new JScrollPane(center);
 		this.add(scroll, BorderLayout.CENTER);
-
-		scroll.setViewportView(center);
-		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
 		TaskInputListener inputListener = new TaskInputListener(this, text, textLabel);
 		this.text.addKeyListener(inputListener);

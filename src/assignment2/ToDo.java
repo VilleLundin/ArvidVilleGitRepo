@@ -15,40 +15,47 @@ import se.his.it401g.todo.TaskListener;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.concurrent.Executor;
 
 public class ToDo implements TaskListener {
+	
+	public static void main(String[] args) {
+		ToDo application = new ToDo();
+		application.execute();
+	}
 
-//	public TaskListener frame;
-	public JPanel buttonPanel1;
-	public JPanel buttonPanel2;
+	private JPanel buttonPanel1;
+	private JPanel buttonPanel2;
 	private JPanel taskPanel;
-	public LinkedList<Task> listOfTasks;
-	public LinkedList<Task> listOfUncompletedTasks;
-	public JLabel status;
-	public int totalTasksInt;
-	public int completedTasksInt;
-//	private Buttons buttons = new Buttons(this);
-	JFrame frame = new JFrame();
+	private LinkedList<Task> listOfTasks;
+	private LinkedList<Task> listOfUncompletedTasks;
+	private JLabel taskCompletionStatus;
+	private JFrame frame = new JFrame();
 
-	public ToDo() {
-//		JFrame frame = new JFrame();
+	private ToDo() {}
+	
+	public void execute () {
 
-		status = new JLabel(completedTasksInt + " out of " + totalTasksInt + " completed");
+		// label showing how many tasks are completed
+		taskCompletionStatus = new JLabel (0 + " out of " + 0 + " tasks completed");
 
 		frame.setSize(750, 550);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
 		frame.setResizable(false);
 
+		// this is the panel where all tasks go
 		taskPanel = new JPanel(new BorderLayout());
 		taskPanel.setLayout(new BoxLayout(taskPanel, 1));
-//		taskPanel.setBackground(Color.blue);
 
+		// Panel for the two rows of buttons
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(new BoxLayout(topPanel, 1));
 		
+		// first row of buttons
 		buttonPanel1 = new JPanel();
 		
+		// create buttons for each type of task
 		JButton addHomeTaskButton = Buttons.createButton("Add Home Task", new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				newTask(new HomeTask());
@@ -67,14 +74,16 @@ public class ToDo implements TaskListener {
 			}
 		});
 		
+		// add the task buttons to panel to form first row of buttons
 		buttonPanel1.add(addHomeTaskButton);
 		buttonPanel1.add(addStudyTaskButton);
 		buttonPanel1.add(addCustomTaskButton);
-		buttonPanel1.add(status);
-//		buttonPanel1.setBackground(Color.GREEN);
+		buttonPanel1.add(taskCompletionStatus);
 		
+		// panel for the second row of buttons
 		buttonPanel2 = new JPanel();
 		
+		// create the sorting buttons
 		JButton sortAlphabeticalButton = Buttons.createButton("Sort by A-Ö", new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				comparatorTaskText();
@@ -93,59 +102,64 @@ public class ToDo implements TaskListener {
 			}
 		});
 		
+		// add the sorting buttons to panel to form second row of buttons
 		buttonPanel2.add(sortAlphabeticalButton);
 		buttonPanel2.add(sortTaskTypeButton);
 		buttonPanel2.add(sortTaskCompletionButton);
-//		buttonPanel2.setBackground(Color.red);
 
+		// add both panels/rows of buttons to panel at top
 		topPanel.add(buttonPanel1);
 		topPanel.add(buttonPanel2);
 
+		// adds scroll to the application
 		JScrollPane scroll = new JScrollPane(taskPanel);
 		frame.add(scroll, BorderLayout.CENTER);
 		frame.add(topPanel, BorderLayout.NORTH);
-
-		listOfTasks = new LinkedList<Task>();
-		listOfUncompletedTasks = new LinkedList<Task>();
-
+		
 		scroll.setViewportView(taskPanel);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		frame.setVisible(true);
-	}
 
-	public void comparatorTaskText() {
+		// lists containing tasks
+		listOfTasks = new LinkedList<Task>();
+		listOfUncompletedTasks = new LinkedList<Task>();
+		
+		frame.setVisible(true);
+	}	
+
+	// methods using comparator to sort tasks
+	private void comparatorTaskText() {
 		Comparator<Task> comparator = new ComparatorTaskText();
 		Collections.sort(listOfTasks, comparator);
 		frame.revalidate();
 		rebuildTaskPanel();
 	}
 
-	public void comparatorTaskType() {
+	private void comparatorTaskType() {
 		Comparator<Task> comparator = new ComparatorTaskType();
 		Collections.sort(listOfTasks, comparator);
 		frame.revalidate();
 		rebuildTaskPanel();
 	}
 
-	public void comparatorTaskCompletion() {
+	private void comparatorTaskCompletion() {
 		Comparator<Task> comparator = new ComparatorTaskCompletion();
 		Collections.sort(listOfTasks, comparator);
 		frame.revalidate();
 		rebuildTaskPanel();
 	}
 
-	public void newTask(Task task) {
+	// when new task is created, add it to lists and update status text and task panel 
+	private void newTask(Task task) {
 		listOfTasks.addLast(task);
 		listOfUncompletedTasks.addLast(task);
-		totalTasksInt++;
-		status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
-//		System.out.println(listOfTasks.indexOf(task));
+		taskCompletionStatus.setText(listOfTasks.size() - listOfUncompletedTasks.size() + " out of " + listOfTasks.size() + " tasks completed");
 		task.setTaskListener(this);
 		taskPanel.add(task.getGuiComponent());
 		taskPanel.revalidate();
 		taskPanel.repaint();
 	}
 
+	// method for placing tasks in correct order according to sorting
 	private void rebuildTaskPanel() {
 		taskPanel.removeAll();
 
@@ -157,46 +171,37 @@ public class ToDo implements TaskListener {
 		taskPanel.repaint();
 	}
 
+	// when task is completed, remove from list of uncompleted and update status text and panel
 	@Override
-	public void taskCompleted(Task t) {
-		listOfUncompletedTasks.remove(t);
-		completedTasksInt++;
-		status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
+	public void taskCompleted(Task task) {
+		listOfUncompletedTasks.remove(task);
+		taskCompletionStatus.setText(listOfTasks.size() - listOfUncompletedTasks.size() + " out of " + listOfTasks.size() + " tasks completed");
+		taskPanel.revalidate();
+		taskPanel.repaint();
+	}
+
+	// when task is uncomplete, add to list of uncomplete and update status text and panel
+	@Override
+	public void taskUncompleted(Task task) {
+		listOfUncompletedTasks.add(task);
+		taskCompletionStatus.setText(listOfTasks.size() - listOfUncompletedTasks.size() + " out of " + listOfTasks.size() + " tasks completed");
+		taskPanel.revalidate();
+		taskPanel.repaint();
+	}
+
+	// when task is removed, remove it from panel and all lists, update status text and panel
+	@Override
+	public void taskRemoved(Task task) {
+		taskPanel.remove(task.getGuiComponent());
+		listOfUncompletedTasks.remove(task);
+		listOfTasks.remove(task);
+		taskCompletionStatus.setText(listOfTasks.size() - listOfUncompletedTasks.size() + " out of " + listOfTasks.size() + " tasks completed");
 		taskPanel.revalidate();
 		taskPanel.repaint();
 	}
 
 	@Override
-	public void taskUncompleted(Task t) {
-		listOfUncompletedTasks.add(t);
-		completedTasksInt--;
-		status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
-		taskPanel.revalidate();
-		taskPanel.repaint();
-	}
-
-	
+	public void taskChanged(Task t) {}
 	@Override
-	public void taskRemoved(Task t) {
-		taskPanel.remove(t.getGuiComponent());
-		listOfUncompletedTasks.remove(t);
-		listOfTasks.remove(t);
-		totalTasksInt--;
-
-		if (t.isComplete() == true) {
-			completedTasksInt--;
-		}
-
-		status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
-		taskPanel.revalidate();
-		taskPanel.repaint();
-	}
-
-	@Override
-	public void taskChanged(Task t) {
-	}
-
-	@Override
-	public void taskCreated(Task t) {
-	}
+	public void taskCreated(Task t) {}
 }
