@@ -18,140 +18,134 @@ import java.util.LinkedList;
 
 public class ToDo implements TaskListener {
 
+//	public TaskListener frame;
+	public JPanel buttonPanel1;
+	public JPanel buttonPanel2;
 	private JPanel taskPanel;
-	private LinkedList<Task> listOfTasks;
-	private LinkedList<Task> listOfUncompletedTasks;
-	private JLabel status;
-	private int totalTasksInt;
-	private int completedTasksInt;
+	public LinkedList<Task> listOfTasks;
+	public LinkedList<Task> listOfUncompletedTasks;
+	public JLabel status;
+	public int totalTasksInt;
+	public int completedTasksInt;
+//	private Buttons buttons = new Buttons(this);
+	JFrame frame = new JFrame();
 
 	public ToDo() {
-		JFrame frame = new JFrame();
+//		JFrame frame = new JFrame();
+
+		status = new JLabel(completedTasksInt + " out of " + totalTasksInt + " completed");
 
 		frame.setSize(750, 550);
-		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
+		frame.setResizable(false);
 
 		taskPanel = new JPanel(new BorderLayout());
-//		panel1.setBackground(Color.green);
-//	panel1.setBounds(0, 80, 737, 433);
 		taskPanel.setLayout(new BoxLayout(taskPanel, 1));
+//		taskPanel.setBackground(Color.blue);
 
-		JPanel buttonPanel = new JPanel(new BorderLayout());
-//		panel2.setBackground(Color.WHITE);
-		buttonPanel.setBounds(0, 0, 737, 80);
-		buttonPanel.setLayout(new BoxLayout(buttonPanel, 0));
+		JPanel topPanel = new JPanel();
+		topPanel.setLayout(new BoxLayout(topPanel, 1));
+		
+		buttonPanel1 = new JPanel();
+		
+		JButton addHomeTaskButton = Buttons.createButton("Add Home Task", new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				newTask(new HomeTask());
+			}
+		});
+		
+		JButton addStudyTaskButton = Buttons.createButton("Add Study Task", new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				newTask(new StudyTask());
+			}
+		});
+
+		JButton addCustomTaskButton = Buttons.createButton("Add Detailed Task", new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				newTask(new CustomTask());
+			}
+		});
+		
+		buttonPanel1.add(addHomeTaskButton);
+		buttonPanel1.add(addStudyTaskButton);
+		buttonPanel1.add(addCustomTaskButton);
+		buttonPanel1.add(status);
+//		buttonPanel1.setBackground(Color.GREEN);
+		
+		buttonPanel2 = new JPanel();
+		
+		JButton sortAlphabeticalButton = Buttons.createButton("Sort by A-Ö", new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				comparatorTaskText();
+			}
+		});
+		
+		JButton sortTaskTypeButton = Buttons.createButton("Sort by type Detailed-Home-Study", new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				comparatorTaskType();
+			}
+		});
+		
+		JButton sortTaskCompletionButton = Buttons.createButton("Sort by Uncompleted-Completed", new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				comparatorTaskCompletion();
+			}
+		});
+		
+		buttonPanel2.add(sortAlphabeticalButton);
+		buttonPanel2.add(sortTaskTypeButton);
+		buttonPanel2.add(sortTaskCompletionButton);
+//		buttonPanel2.setBackground(Color.red);
+
+		topPanel.add(buttonPanel1);
+		topPanel.add(buttonPanel2);
 
 		JScrollPane scroll = new JScrollPane(taskPanel);
 		frame.add(scroll, BorderLayout.CENTER);
-		frame.add(buttonPanel, BorderLayout.NORTH);
-
-		JButton AddHomeTaskButton = new JButton("New Home task");
-		JButton AddStudyTaskButton = new JButton("New Study task");
-		JButton AddCustomTaskButton = new JButton("New Detailed task");
-
-		status = new JLabel(completedTasksInt + " out of " + totalTasksInt + " completed");
+		frame.add(topPanel, BorderLayout.NORTH);
 
 		listOfTasks = new LinkedList<Task>();
 		listOfUncompletedTasks = new LinkedList<Task>();
 
-		buttonPanel.add(AddHomeTaskButton);
-		buttonPanel.add(AddStudyTaskButton);
-		buttonPanel.add(AddCustomTaskButton);
-		buttonPanel.add(status);
-
 		scroll.setViewportView(taskPanel);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
-		AddHomeTaskButton.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				Task task = new HomeTask();
-				listOfTasks.addLast(task);
-				listOfUncompletedTasks.addLast(task);
-				totalTasksInt++;
-				status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
-				task.setTaskListener(ToDo.this);
-				taskPanel.add(task.getGuiComponent());
-				frame.revalidate();
-			}
-		});
-
-		AddStudyTaskButton.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				Task task = new StudyTask();
-				listOfTasks.addLast(task);
-				listOfUncompletedTasks.addLast(task);
-				totalTasksInt++;
-				status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
-				System.out.println(listOfTasks.indexOf(task));
-				task.setTaskListener(ToDo.this);
-				taskPanel.add(task.getGuiComponent());
-				frame.revalidate();
-			}
-		});
-
-		AddCustomTaskButton.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				Task task = new CustomTask();
-				listOfTasks.addLast(task);
-				listOfUncompletedTasks.addLast(task);
-				totalTasksInt++;
-				status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
-				System.out.println(listOfTasks.indexOf(task));
-				task.setTaskListener(ToDo.this);
-				taskPanel.add(task.getGuiComponent());
-				frame.revalidate();
-			}
-		});
-
-		JButton sortAlphabetButton = new JButton("Sort by A-Ö");
-		buttonPanel.add(sortAlphabetButton);
-		sortAlphabetButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				Comparator<Task> comparator = new ComparatorTaskText();
-
-				Collections.sort(listOfTasks, comparator);
-				frame.revalidate();
-				rebuildTaskPanel();
-			}
-		});
-		
-		
-		JButton sortTaskTypeButton = new JButton("Sort by type Detailed-Home-Study");
-		buttonPanel.add(sortTaskTypeButton);
-		sortTaskTypeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				Comparator<Task> comparator = new ComparatorTaskType();
-
-				Collections.sort(listOfTasks, comparator);
-				frame.revalidate();
-				rebuildTaskPanel();
-			}
-		});
-		
-		
-		
-		JButton sortTaskCompletionButton = new JButton("Sort by Uncompleted-Completed");
-		buttonPanel.add(sortTaskCompletionButton);
-		sortTaskCompletionButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				Comparator<Task> comparator = new ComparatorTaskCompletion();
-
-				Collections.sort(listOfTasks, comparator);
-				frame.revalidate();
-				rebuildTaskPanel();
-			}
-		});
-
+		frame.setVisible(true);
 	}
-	
+
+	public void comparatorTaskText() {
+		Comparator<Task> comparator = new ComparatorTaskText();
+		Collections.sort(listOfTasks, comparator);
+		frame.revalidate();
+		rebuildTaskPanel();
+	}
+
+	public void comparatorTaskType() {
+		Comparator<Task> comparator = new ComparatorTaskType();
+		Collections.sort(listOfTasks, comparator);
+		frame.revalidate();
+		rebuildTaskPanel();
+	}
+
+	public void comparatorTaskCompletion() {
+		Comparator<Task> comparator = new ComparatorTaskCompletion();
+		Collections.sort(listOfTasks, comparator);
+		frame.revalidate();
+		rebuildTaskPanel();
+	}
+
+	public void newTask(Task task) {
+		listOfTasks.addLast(task);
+		listOfUncompletedTasks.addLast(task);
+		totalTasksInt++;
+		status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
+//		System.out.println(listOfTasks.indexOf(task));
+		task.setTaskListener(this);
+		taskPanel.add(task.getGuiComponent());
+		taskPanel.revalidate();
+		taskPanel.repaint();
+	}
+
 	private void rebuildTaskPanel() {
 		taskPanel.removeAll();
 
@@ -170,7 +164,6 @@ public class ToDo implements TaskListener {
 		status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
 		taskPanel.revalidate();
 		taskPanel.repaint();
-
 	}
 
 	@Override
@@ -182,30 +175,28 @@ public class ToDo implements TaskListener {
 		taskPanel.repaint();
 	}
 
+	
 	@Override
 	public void taskRemoved(Task t) {
 		taskPanel.remove(t.getGuiComponent());
 		listOfUncompletedTasks.remove(t);
 		listOfTasks.remove(t);
 		totalTasksInt--;
-		
+
 		if (t.isComplete() == true) {
 			completedTasksInt--;
 		}
-		
+
 		status.setText(completedTasksInt + " out of " + totalTasksInt + " tasks completed");
 		taskPanel.revalidate();
 		taskPanel.repaint();
 	}
-	
+
 	@Override
 	public void taskChanged(Task t) {
-		// TODO Auto-generated method stub
-	}
-	
-	@Override
-	public void taskCreated(Task t) {
-		// TODO Auto-generated method stub
 	}
 
+	@Override
+	public void taskCreated(Task t) {
+	}
 }
