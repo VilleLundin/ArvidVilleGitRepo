@@ -57,12 +57,11 @@ public class CustomTask extends JPanel implements Task {
 		center.add(text);
 		center.add(textLabel);
 		center.add(textDescription);
-		add(center);
 		textDescription.setLineWrap(true);
 
 		// add scroll to textArea
 		JScrollPane scroll = new JScrollPane(center);
-		this.add(scroll, BorderLayout.CENTER);
+		add(scroll, BorderLayout.CENTER);
 
 		TaskInputListener inputListener = new TaskInputListener(this, text, textLabel);
 		this.text.addKeyListener(inputListener);

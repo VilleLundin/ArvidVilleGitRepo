@@ -3,20 +3,18 @@ package assignment2;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import javax.swing.*;
 
 import se.his.it401g.todo.HomeTask;
 import se.his.it401g.todo.Task;
-import se.his.it401g.todo.TaskInputListener;
 import se.his.it401g.todo.StudyTask;
 import se.his.it401g.todo.TaskListener;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
-import java.util.concurrent.Executor;
 
+// Main application class that builds the GUI and handles events and tasks
 public class ToDo implements TaskListener {
 	
 	public static void main(String[] args) {
@@ -33,7 +31,6 @@ public class ToDo implements TaskListener {
 	private JFrame frame = new JFrame();
 
 	private ToDo() {}
-	
 	public void execute () {
 
 		// label showing how many tasks are completed
@@ -124,7 +121,7 @@ public class ToDo implements TaskListener {
 		listOfUncompletedTasks = new LinkedList<Task>();
 		
 		frame.setVisible(true);
-	}	
+	}
 
 	// methods using comparator to sort tasks
 	private void comparatorTaskText() {
@@ -152,7 +149,7 @@ public class ToDo implements TaskListener {
 	private void newTask(Task task) {
 		listOfTasks.addLast(task);
 		listOfUncompletedTasks.addLast(task);
-		taskCompletionStatus.setText(listOfTasks.size() - listOfUncompletedTasks.size() + " out of " + listOfTasks.size() + " tasks completed");
+		statusUpdate();
 		task.setTaskListener(this);
 		taskPanel.add(task.getGuiComponent());
 		taskPanel.revalidate();
@@ -170,12 +167,16 @@ public class ToDo implements TaskListener {
 		taskPanel.revalidate();
 		taskPanel.repaint();
 	}
+	
+	private void statusUpdate() {
+		taskCompletionStatus.setText(listOfTasks.size() - listOfUncompletedTasks.size() + " out of " + listOfTasks.size() + " tasks completed");
+	}
 
 	// when task is completed, remove from list of uncompleted and update status text and panel
 	@Override
 	public void taskCompleted(Task task) {
 		listOfUncompletedTasks.remove(task);
-		taskCompletionStatus.setText(listOfTasks.size() - listOfUncompletedTasks.size() + " out of " + listOfTasks.size() + " tasks completed");
+		statusUpdate();
 		taskPanel.revalidate();
 		taskPanel.repaint();
 	}
@@ -184,7 +185,7 @@ public class ToDo implements TaskListener {
 	@Override
 	public void taskUncompleted(Task task) {
 		listOfUncompletedTasks.add(task);
-		taskCompletionStatus.setText(listOfTasks.size() - listOfUncompletedTasks.size() + " out of " + listOfTasks.size() + " tasks completed");
+		statusUpdate();
 		taskPanel.revalidate();
 		taskPanel.repaint();
 	}
@@ -195,7 +196,7 @@ public class ToDo implements TaskListener {
 		taskPanel.remove(task.getGuiComponent());
 		listOfUncompletedTasks.remove(task);
 		listOfTasks.remove(task);
-		taskCompletionStatus.setText(listOfTasks.size() - listOfUncompletedTasks.size() + " out of " + listOfTasks.size() + " tasks completed");
+		statusUpdate();		
 		taskPanel.revalidate();
 		taskPanel.repaint();
 	}
